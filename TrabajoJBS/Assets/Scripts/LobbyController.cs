@@ -12,14 +12,6 @@ public class LobbyController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SIOAuthPayload auth = new SIOAuthPayload();
-
-        string token = PlayerPrefs.GetString("token");
-
-        auth.AddElement("token", token);
-
-        sioCom.Instance.Connect(auth);
-
         sioCom.Instance.On("connect", (string data) => {
             Debug.Log("LOCAL: Conectado al servidor");
             //sioCom.Instance.Emit("KnockKnock");
@@ -34,6 +26,14 @@ public class LobbyController : MonoBehaviour
         {
             Debug.Log("La conexion se ha rechazado");
         });
+
+        SIOAuthPayload auth = new SIOAuthPayload();
+
+        string token = PlayerPrefs.GetString("token");
+
+        auth.AddElement("token", token);
+
+        sioCom.Instance.Connect(auth);
     }
 
     public void LogOut()
