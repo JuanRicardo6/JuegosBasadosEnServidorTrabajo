@@ -10,6 +10,9 @@ public class AuthController : MonoBehaviour
     public string url = "http://localhost:3000";
     public string Username { get; set; }
     public string Token { get; set; }
+
+    [SerializeField] Text messageUI;
+    [SerializeField] REvents messageE;
     void Start()
     {
         Token = PlayerPrefs.GetString("token");
@@ -67,14 +70,16 @@ public class AuthController : MonoBehaviour
         }
         else
         {
-            Debug.Log(request.downloadHandler.text);
-
+            //Debug.Log(request.downloadHandler.text);
+            
             if (request.responseCode == 200)
             {
                 AuthData authData = JsonUtility.FromJson<AuthData>(request.downloadHandler.text);
 
-                Debug.Log("Te has registrado " + authData.user.username);
-
+                //Debug.Log("Te has registrado " + authData.user.username);
+                messageUI.text = "Te has registrado " + authData.user.username;
+                messageE.FireEvent();
+                yield return new WaitForSeconds(5f);
                 PlayerPrefs.SetString("token", authData.token);
                 PlayerPrefs.SetString("username", authData.user.username);
 
@@ -82,6 +87,9 @@ public class AuthController : MonoBehaviour
             }
             else
             {
+                messageUI.text = request.downloadHandler.text.ToString();
+                messageE.FireEvent();
+                yield return new WaitForSeconds(5f);
                 string mensaje = "Status :" + request.responseCode;
                 mensaje += "\ncontent-type:" + request.GetResponseHeader("content-type");
                 mensaje += "\nError :" + request.error;
@@ -109,9 +117,12 @@ public class AuthController : MonoBehaviour
             if(request.responseCode == 200)
             {
                 AuthData authData = JsonUtility.FromJson<AuthData>(request.downloadHandler.text);
-                Debug.Log("Bienvenido " + authData.user.username + ", id:" + authData.user.id);
+                //Debug.Log("Bienvenido " + authData.user.username + ", id:" + authData.user.id);
+                messageUI.text = "Bienvenido " + authData.user.username;
+                messageE.FireEvent();
                 Debug.Log("TOKEN: " + authData.token);
 
+                yield return new WaitForSeconds(5f);
                 PlayerPrefs.SetString("token", authData.token);
                 PlayerPrefs.SetString("username", authData.user.username);
 
@@ -120,8 +131,11 @@ public class AuthController : MonoBehaviour
             }
             else
             {
+                messageUI.text = request.downloadHandler.text.ToString();
+                messageE.FireEvent();
+                yield return new WaitForSeconds(5f);
                 string mensaje = "Status :" + request.responseCode;
-                mensaje += "\ncontent-type:" + request.GetResponseHeader("content-type");
+                mensaje = request.GetResponseHeader("content-type");
                 mensaje += "\nError :" + request.error;
                 Debug.Log(mensaje);
             }
