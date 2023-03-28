@@ -9,8 +9,9 @@ public class LobbyController : MonoBehaviour
 {
     public SocketIOCommunicator sioCom;
 
-    //public int maxUsers = 6;
+    public int maxUsers = 6;
     [SerializeField] List<Text> userTexts = new List<Text>();
+    [SerializeField] Text searchText;
 
     void Start()
     {
@@ -44,10 +45,17 @@ public class LobbyController : MonoBehaviour
             UpdateTextList(resData);
         });
 
-        sioCom.Instance.On("MatchReady", (string data) =>
+        sioCom.Instance.On("WaitingForMatch", (string data) =>
         {
+            searchText.gameObject.SetActive(true);
+            Debug.Log("Estás en cola de espera. Buscando partida...");
+        });
+
+        sioCom.Instance.On("MatchFound", (string data) =>
+        {
+            searchText.gameObject.SetActive(false);
             MatchData matchData = JsonUtility.FromJson<MatchData>(data);
-            Debug.Log("Lucha por sobrevivir!" + " Tu oponente es: " + matchData.opponent);
+            Debug.Log("Lucha por sobrevivir!" + " Te has unido a la sala: " + matchData.gameRoom + " Lucharas contra: " + matchData.enemy);
         });
     }
 
@@ -66,15 +74,23 @@ public class LobbyController : MonoBehaviour
 
     private void UpdateTextList(ListData listData)
     {
-        for (int i = 0; i < userTexts.Count; i++)
+        if (userTexts.Count > maxUsers)
         {
-            if (i < listData.onlineUsers.Count)
+            Debug.Log("El servidor se encuentra lleno. Intenta más tarde.");
+            LogOut();
+        }
+        else
+        {
+            for (int i = 0; i < userTexts.Count; i++)
             {
-                userTexts[i].text = listData.onlineUsers[i].username;
-            }
-            else
-            {
-                userTexts[i].text = "";
+                if (i < listData.onlineUsers.Count)
+                {
+                    userTexts[i].text = listData.onlineUsers[i].username;
+                }
+                else
+                {
+                    userTexts[i].text = "";
+                }
             }
         }
     }
@@ -89,7 +105,8 @@ public class ListData
 [System.Serializable]
 public class MatchData
 {
-    public string opponent;
+    public string gameRoom;
+    public string enemy;
 }
 
 [System.Serializable]
