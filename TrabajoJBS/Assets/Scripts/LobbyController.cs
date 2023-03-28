@@ -12,6 +12,8 @@ public class LobbyController : MonoBehaviour
     public int maxUsers = 6;
     [SerializeField] List<Text> userTexts = new List<Text>();
     [SerializeField] Text searchText;
+    [SerializeField] Button searchButton;
+    [SerializeField] Button cancelSearchButton;
 
     void Start()
     {
@@ -54,8 +56,16 @@ public class LobbyController : MonoBehaviour
         sioCom.Instance.On("MatchFound", (string data) =>
         {
             searchText.gameObject.SetActive(false);
+            searchButton.gameObject.SetActive(false);
+            cancelSearchButton.gameObject.SetActive(false);
             MatchData matchData = JsonUtility.FromJson<MatchData>(data);
             Debug.Log("Lucha por sobrevivir!" + " Te has unido a la sala: " + matchData.gameRoom + " Lucharas contra: " + matchData.enemy);
+        });
+
+        sioCom.Instance.On("MatchCanceled", (string data) =>
+        {
+            searchText.gameObject.SetActive(false);
+            Debug.Log("Búsqueda cancelada.");
         });
     }
 
@@ -70,6 +80,11 @@ public class LobbyController : MonoBehaviour
     public void FindMatch()
     {
         sioCom.Instance.Emit("FindMatch");
+    }
+
+    public void StopSearchMatch()
+    {
+        sioCom.Instance.Emit("CancelMatchmaking");
     }
 
     private void UpdateTextList(ListData listData)
