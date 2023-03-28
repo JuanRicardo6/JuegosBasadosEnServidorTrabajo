@@ -79,17 +79,15 @@ public class AuthController : MonoBehaviour
                 //Debug.Log("Te has registrado " + authData.user.username);
                 messageUI.text = "Te has registrado " + authData.user.username;
                 messageE.FireEvent();
-                yield return new WaitForSeconds(5f);
-                PlayerPrefs.SetString("token", authData.token);
-                PlayerPrefs.SetString("username", authData.user.username);
+                yield return new WaitForSeconds(3f);
 
                 StartCoroutine(LoginPost(postData));
             }
             else
             {
-                messageUI.text = request.downloadHandler.text.ToString();
+                WarningMsg warningMsg = JsonUtility.FromJson<WarningMsg>(request.downloadHandler.text);
+                messageUI.text = warningMsg.msg;
                 messageE.FireEvent();
-                yield return new WaitForSeconds(5f);
                 string mensaje = "Status :" + request.responseCode;
                 mensaje += "\ncontent-type:" + request.GetResponseHeader("content-type");
                 mensaje += "\nError :" + request.error;
@@ -121,19 +119,19 @@ public class AuthController : MonoBehaviour
                 messageUI.text = "Bienvenido " + authData.user.username;
                 messageE.FireEvent();
                 Debug.Log("TOKEN: " + authData.token);
-
-                yield return new WaitForSeconds(5f);
                 PlayerPrefs.SetString("token", authData.token);
                 PlayerPrefs.SetString("username", authData.user.username);
+
+                yield return new WaitForSeconds(3f);
 
                 SceneManager.LoadScene("Lobby");
 
             }
             else
             {
-                messageUI.text = request.downloadHandler.text.ToString();
+                WarningMsg warningMsg = JsonUtility.FromJson<WarningMsg>(request.downloadHandler.text);
+                messageUI.text = warningMsg.msg;
                 messageE.FireEvent();
-                yield return new WaitForSeconds(5f);
                 string mensaje = "Status :" + request.responseCode;
                 mensaje = request.GetResponseHeader("content-type");
                 mensaje += "\nError :" + request.error;
@@ -164,9 +162,7 @@ public class AuthController : MonoBehaviour
                 SceneManager.LoadScene("Lobby");
             }
         }
-
     }
-
 }
 
 [System.Serializable]
@@ -184,5 +180,12 @@ public class UserData
 {
     public int id;
     public string username;
+}
+
+[System.Serializable]
+public class WarningMsg
+{
+    public string msg;
+    public string field;
 }
 

@@ -140,7 +140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &52223834
 RectTransform:
   m_ObjectHideFlags: 0
@@ -408,10 +408,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -885,6 +885,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sioCom: {fileID: 1326899456}
+  userTexts:
+  - {fileID: 64713313}
+  - {fileID: 1732569061}
+  - {fileID: 1892231999}
+  - {fileID: 516582261}
+  - {fileID: 633906973}
+  - {fileID: 1610157015}
 --- !u!4 &812835003
 Transform:
   m_ObjectHideFlags: 0
@@ -1801,7 +1808,7 @@ GameObject:
   - component: {fileID: 1635251133}
   - component: {fileID: 1635251132}
   m_Layer: 5
-  m_Name: PlayerCount (1)
+  m_Name: SearchingText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
