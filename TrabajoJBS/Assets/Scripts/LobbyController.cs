@@ -14,23 +14,31 @@ public class LobbyController : MonoBehaviour
     [SerializeField] Text searchText;
     [SerializeField] Button searchButton;
     [SerializeField] Button cancelSearchButton;
+    [SerializeField] REvents bienvenido, jugadorNuevo, jugadorMenos, rechazado, partida;
+    public string gameRoom,enemy;
 
     void Start()
     {
         sioCom.Instance.On("connect", (string data) => {
             Debug.Log("LOCAL: Conectado al servidor");
+            //bienvenido
+            bienvenido.FireEvent();
             sioCom.Instance.Emit("KnockKnock");
         });
 
         sioCom.Instance.On("connectionRejected", (string data) =>
         {
             Debug.Log("La conexion se ha rechazado");
+            //rechazado
+            rechazado.FireEvent();
         });
 
         sioCom.Instance.On("UserConnected", (string data) =>
         {
             ListData resData = JsonUtility.FromJson<ListData>(data);
             UpdateTextList(resData);
+            //jugador se ha unido
+            jugadorNuevo.FireEvent();
         });
 
         SIOAuthPayload auth = new SIOAuthPayload();
@@ -45,12 +53,15 @@ public class LobbyController : MonoBehaviour
         {
             ListData resData = JsonUtility.FromJson<ListData>(data);
             UpdateTextList(resData);
+            //jugador se ha ido
+            jugadorMenos.FireEvent();
         });
 
         sioCom.Instance.On("WaitingForMatch", (string data) =>
         {
             searchText.gameObject.SetActive(true);
             Debug.Log("Estás en cola de espera. Buscando partida...");
+            //anim searching
         });
 
         sioCom.Instance.On("MatchFound", (string data) =>
@@ -59,13 +70,18 @@ public class LobbyController : MonoBehaviour
             searchButton.gameObject.SetActive(false);
             cancelSearchButton.gameObject.SetActive(false);
             MatchData matchData = JsonUtility.FromJson<MatchData>(data);
+            gameRoom = matchData.gameRoom;
+            enemy = matchData.enemy;
             Debug.Log("Lucha por sobrevivir!" + " Te has unido a la sala: " + matchData.gameRoom + " Lucharas contra: " + matchData.enemy);
+            //mensaje pelea
+            partida.FireEvent();
         });
 
         sioCom.Instance.On("MatchCanceled", (string data) =>
         {
             searchText.gameObject.SetActive(false);
             Debug.Log("Búsqueda cancelada.");
+            //stop searching
         });
     }
 
@@ -92,6 +108,7 @@ public class LobbyController : MonoBehaviour
         if (userTexts.Count > maxUsers)
         {
             Debug.Log("El servidor se encuentra lleno. Intenta más tarde.");
+            //mensaje de salir
             LogOut();
         }
         else
