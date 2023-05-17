@@ -22,7 +22,7 @@ public class OponnetText : MonoBehaviour
     {
         yield return new WaitForSeconds(6f);
         oponente.gameObject.SetActive(true);
-        oponente.text = "Oponente: " + controlador.enemy;
+        oponente.text = "Tu lucha comenzara pronto!";
         sala.gameObject.SetActive(true);
         sala.text = "Sala: " + controlador.gameRoom;
     }

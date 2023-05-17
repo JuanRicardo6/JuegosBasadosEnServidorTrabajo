@@ -11,11 +11,14 @@ public class LobbyController : MonoBehaviour
 
     public int maxUsers = 6;
     [SerializeField] List<Text> userTexts = new List<Text>();
+    [SerializeField] Text winnerText;
     [SerializeField] Text searchText;
     [SerializeField] Button searchButton;
     [SerializeField] Button cancelSearchButton;
     [SerializeField] REvents bienvenido, jugadorNuevo, jugadorMenos, rechazado, partida;
-    public string gameRoom,enemy;
+    [SerializeField] GameObject lobbyCanvas;
+    [SerializeField] GameObject gameCanvas;
+    public string gameRoom,player1,player2;
 
     void Start()
     {
@@ -64,17 +67,20 @@ public class LobbyController : MonoBehaviour
             //anim searching
         });
 
-        sioCom.Instance.On("MatchFound", (string data) =>
+        sioCom.Instance.On("MatchReady", (string data) =>
         {
             searchText.gameObject.SetActive(false);
             searchButton.gameObject.SetActive(false);
             cancelSearchButton.gameObject.SetActive(false);
             MatchData matchData = JsonUtility.FromJson<MatchData>(data);
             gameRoom = matchData.gameRoom;
-            enemy = matchData.enemy;
-            Debug.Log("Lucha por sobrevivir!" + " Te has unido a la sala: " + matchData.gameRoom + " Lucharas contra: " + matchData.enemy);
+            player1 = matchData.player1;
+            player2 = matchData.player2;
+            Debug.Log("Lucha por sobrevivir!" + " Te has unido a la sala: " + gameRoom + " Los luchadores son: " + player1 + " y " + player2);
             //mensaje pelea
-            partida.FireEvent();
+            //partida.FireEvent();
+            lobbyCanvas.gameObject.SetActive(false);
+            gameCanvas.gameObject.SetActive(true);
         });
 
         sioCom.Instance.On("MatchCanceled", (string data) =>
@@ -83,6 +89,23 @@ public class LobbyController : MonoBehaviour
             Debug.Log("Búsqueda cancelada.");
             //stop searching
         });
+
+        sioCom.Instance.On("gameOver", (string data) =>
+        {
+            winnerText.text = "El ganador es: " + data.ToString();
+            winnerText.gameObject.SetActive(true);
+            StartCoroutine(GameOver());
+        });
+    }
+
+    IEnumerator GameOver()
+    {
+        yield return new WaitForSeconds(3f);
+
+        winnerText.gameObject.SetActive(false);
+        lobbyCanvas.gameObject.SetActive(true);
+        gameCanvas.gameObject.SetActive(false);
+        searchButton.gameObject.SetActive(true);
     }
 
     public void LogOut()
@@ -138,7 +161,8 @@ public class ListData
 public class MatchData
 {
     public string gameRoom;
-    public string enemy;
+    public string player1;
+    public string player2;
 }
 
 [System.Serializable]
